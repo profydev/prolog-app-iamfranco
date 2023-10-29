@@ -9,6 +9,7 @@ type MenuItemProps = {
   iconSrc: string;
   onClick: () => void;
   isCollapsed: boolean;
+  toRotateIcon?: boolean;
 };
 
 export function MenuItemButton({
@@ -17,12 +18,15 @@ export function MenuItemButton({
   onClick,
   iconSrc,
   isCollapsed,
+  toRotateIcon = false,
 }: MenuItemProps) {
+  const iconClass = `${styles.icon} ${toRotateIcon && styles.rotateIcon}`;
+
   return (
     <li className={classNames(styles.listItem, className)}>
       <Button className={styles.anchor} onClick={onClick}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={styles.icon} src={iconSrc} alt={`${text} icon`} />{" "}
+        <img className={iconClass} src={iconSrc} alt={`${text} icon`} />{" "}
         {!isCollapsed && text}{" "}
       </Button>
     </li>
