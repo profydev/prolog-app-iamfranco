@@ -13,7 +13,14 @@ module.exports = {
           // CSS Modules composition
           // https://github.com/css-modules/css-modules#composition
           "composes",
+          "desktopWidth",
         ],
+      },
+    ],
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        ignorePseudoClasses: ["export"],
       },
     ],
   },
