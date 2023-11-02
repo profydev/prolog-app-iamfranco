@@ -1,3 +1,4 @@
+import { capitalize } from "lodash";
 import mockIssues1 from "../fixtures/issues-page-1.json";
 import mockIssues2 from "../fixtures/issues-page-2.json";
 import mockIssues3 from "../fixtures/issues-page-3.json";
@@ -36,16 +37,41 @@ describe("Issue List", () => {
     });
 
     it("renders the issues", () => {
+      const columnTitles = ["Issue", "Level", "Events", "Users"];
+      cy.get("main")
+        .find("thead")
+        .find("tr")
+        .find("th")
+        .each(($el, index) => {
+          cy.wrap($el).contains(columnTitles[index]);
+        });
+
       cy.get("main")
         .find("tbody")
         .find("tr")
         .each(($el, index) => {
+          // get table data cells for current row
+          cy.wrap($el).find("td").as("tds");
+
+          // row should have 4 cells
+          cy.get("@tds").should("have.length", 4);
+
+          // check 1st cell content
           const issue = mockIssues1.items[index];
           const firstLineOfStackTrace = issue.stack.split("\n")[1].trim();
-          cy.wrap($el).contains(issue.name);
-          cy.wrap($el).contains(issue.message);
-          cy.wrap($el).contains(issue.numEvents);
-          cy.wrap($el).contains(firstLineOfStackTrace);
+          cy.get("@tds").eq(0).as("td0");
+          cy.get("@td0").contains(issue.name);
+          cy.get("@td0").contains(firstLineOfStackTrace);
+          cy.get("@td0").contains(issue.message);
+
+          // check 2nd cell content
+          cy.get("@tds").eq(1).contains(capitalize(issue.level));
+
+          // check 3rd cell content
+          cy.get("@tds").eq(2).contains(issue.numEvents);
+
+          // check 4rd cell content
+          cy.get("@tds").eq(3).contains(issue.numUsers);
         });
     });
 
