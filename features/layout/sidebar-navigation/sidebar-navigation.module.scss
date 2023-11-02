@@ -139,3 +139,7 @@
     display: flex;
   }
 }
+
+:export {
+  desktopWidth: breakpoint.$desktop;
+}

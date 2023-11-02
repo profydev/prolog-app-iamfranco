@@ -39,6 +39,14 @@ describe("Sidebar Navigation", () => {
         );
     });
 
+    it("logo is showing large version when menu not collapsed", () => {
+      cy.get('img[alt="logo"]').should(
+        "have.attr",
+        "src",
+        "/icons/logo-large.svg",
+      );
+    });
+
     it("is collapsible", () => {
       // collapse navigation
       cy.get("nav").contains("Collapse").click();
@@ -49,6 +57,28 @@ describe("Sidebar Navigation", () => {
 
       // check that text is not rendered
       cy.get("nav").contains("Issues").should("not.exist");
+
+      // check that logo is showing small version
+      cy.get('img[alt="logo"]').should(
+        "have.attr",
+        "src",
+        "/icons/logo-small.svg",
+      );
+    });
+
+    it("when collapse menu and rotate screen (into non desktop width), then logo should show as large version", () => {
+      // collapse navigation
+      cy.get("nav").contains("Collapse").click();
+
+      // rotate screen resolution
+      cy.viewport(900, 1025);
+
+      // check that logo is showing large version
+      cy.get('img[alt="logo"]').should(
+        "have.attr",
+        "src",
+        "/icons/logo-large.svg",
+      );
     });
   });
 
