@@ -1,5 +1,11 @@
-import capitalize from "lodash/capitalize";
 import mockProjects from "../fixtures/projects.json";
+
+interface ExpectedValue {
+  language: string;
+  status: string;
+  statusBackgroundColor: string;
+  statusColor: string;
+}
 
 describe("Project List", () => {
   beforeEach(() => {
@@ -21,18 +27,61 @@ describe("Project List", () => {
     });
 
     it("renders the projects", () => {
-      const languageNames = ["React", "Node.js", "Python"];
+      const expectedValues: ExpectedValue[] = [
+        {
+          language: "React",
+          status: "Critical",
+          statusBackgroundColor: "rgb(254, 243, 242)",
+          statusColor: "rgb(180, 35, 24)",
+        },
+        {
+          language: "Node.js",
+          status: "Warning",
+          statusBackgroundColor: "rgb(255, 250, 235)",
+          statusColor: "rgb(181, 71, 8)",
+        },
+        {
+          language: "Python",
+          status: "Stable",
+          statusBackgroundColor: "rgb(236, 253, 243)",
+          statusColor: "rgb(2, 122, 72)",
+        },
+      ];
 
       // get all project cards
       cy.get("main")
         .find("li")
         .each(($el, index) => {
-          // check that project data is rendered
-          cy.wrap($el).contains(mockProjects[index].name);
-          cy.wrap($el).contains(languageNames[index]);
-          cy.wrap($el).contains(mockProjects[index].numIssues);
-          cy.wrap($el).contains(mockProjects[index].numEvents24h);
-          cy.wrap($el).contains(capitalize(mockProjects[index].status));
+          const project = mockProjects[index];
+          const expectedValue = expectedValues[index];
+
+          // check project card contains correct name and language
+          cy.wrap($el).contains(project.name);
+          cy.wrap($el).contains(expectedValue.language);
+
+          // check number of issues is sibling of total issues label
+          cy.wrap($el)
+            .contains("Total issues")
+            .parent()
+            .contains(project.numIssues);
+
+          // check number of events within last 24 hours is sibling of last 24h label
+          cy.wrap($el)
+            .contains("Last 24h")
+            .parent()
+            .contains(project.numEvents24h);
+
+          // check status badget has correct text and color
+          cy.wrap($el)
+            .contains(expectedValue.status)
+            .should(
+              "have.css",
+              "background-color",
+              expectedValue.statusBackgroundColor,
+            )
+            .and("have.css", "color", expectedValue.statusColor);
+
+          // check link has correct href
           cy.wrap($el)
             .find("a")
             .should("have.attr", "href", "/dashboard/issues");
